@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { ChevronDown, Clock, MapPin } from "lucide-react";
 
@@ -56,6 +57,31 @@ const HERO_FEATURES: { label: string; icon: (props: FeatureIconProps) => ReactNo
   },
 ];
 
+const HERO_VIDEO = "/hero-port.mp4";
+const HERO_POSTER = "/hero-port.jpg";
+
+/**
+ * `navigator.connection` is not in the DOM lib. Only the one field this needs
+ * is declared, rather than pulling in a shim for the whole Network Information
+ * API — it is optional everywhere and absent on Safari.
+ */
+interface NetworkInformation {
+  saveData?: boolean;
+}
+
+/** Cancels whichever scheduler `attach` happened to use. */
+function cancelIdle(handle: number | undefined) {
+  if (handle === undefined) return;
+  if (window.cancelIdleCallback) window.cancelIdleCallback(handle);
+  else window.clearTimeout(handle);
+}
+
+function prefersLightPayload(): boolean {
+  const connection = (navigator as Navigator & { connection?: NetworkInformation })
+    .connection;
+  return Boolean(connection?.saveData);
+}
+
 export function Hero() {
   const scopeRef = useRef<HTMLDivElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
@@ -66,10 +92,60 @@ export function Hero() {
   const scrollCueRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
+  /**
+   * The hero footage is 15 MB, and with a bare `autoPlay` the browser began
+   * fetching it in the same breath as the stylesheet and the fonts — on a
+   * phone that is the entire connection, spent on a background that decorates
+   * a headline the visitor could already read. So the poster frame renders as
+   * an ordinary optimized image and carries the LCP, and the video is attached
+   * only once the page has finished loading everything it actually needs.
+   *
+   * Two visitors never get it at all: anyone who asked for reduced motion, and
+   * anyone browsing under Save-Data, for whom a decorative loop is precisely
+   * the wrong thing to spend a data plan on. Both keep the still frame.
+   */
   useEffect(() => {
-    if (prefersReducedMotion) videoRef.current?.pause();
+    if (prefersReducedMotion || prefersLightPayload()) return;
+
+    let idleHandle: number | undefined;
+
+    const attach = () => {
+      // One more yield after load, so the video never competes with whatever
+      // the page is still settling.
+      idleHandle = window.requestIdleCallback
+        ? window.requestIdleCallback(() => setVideoSrc(HERO_VIDEO))
+        : window.setTimeout(() => setVideoSrc(HERO_VIDEO), 200);
+    };
+
+    if (document.readyState === "complete") {
+      attach();
+      return () => cancelIdle(idleHandle);
+    }
+
+    window.addEventListener("load", attach);
+    return () => {
+      window.removeEventListener("load", attach);
+      cancelIdle(idleHandle);
+    };
   }, [prefersReducedMotion]);
+
+  // A <source> added after mount is invisible to an element that has already
+  // decided there was nothing to play, so the load is kicked off by hand.
+  // `autoplay` is not guaranteed to fire again after a manual load(), so play
+  // is also requested outright — and allowed to fail, because a browser that
+  // refuses autoplay should simply leave the poster frame in place rather than
+  // throw.
+  useEffect(() => {
+    if (!videoSrc) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.load();
+    video.play().catch(() => {});
+  }, [videoSrc]);
 
   useGSAP(
     () => {
@@ -123,17 +199,36 @@ export function Hero() {
       data-header-scrim
       className="relative flex min-h-dvh flex-col justify-end overflow-hidden bg-scrim py-16"
     >
+      {/* The LCP element. Served through next/image so it arrives as AVIF or
+          WebP at the viewport's own width, rather than as the 203 KB JPEG a
+          bare `poster` attribute would fetch at full size on every device. */}
+      <Image
+        src={HERO_POSTER}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+
       <video
         ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
-        poster="/hero-port.jpg"
+        preload="none"
         aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover"
+        onPlaying={() => setVideoPlaying(true)}
+        // Crossfades in over the poster once it is genuinely playing. Held
+        // transparent until then so the swap is never a visible flash of an
+        // empty black box.
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover transition-opacity duration-700",
+          videoPlaying ? "opacity-100" : "opacity-0",
+        )}
       >
-        <source src="/hero-port.mp4" type="video/mp4" />
+        {videoSrc && <source src={videoSrc} type="video/mp4" />}
       </video>
       <div
         aria-hidden="true"

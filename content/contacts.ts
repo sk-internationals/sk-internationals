@@ -99,8 +99,42 @@ export const CONTACT_DESKS: ContactDesk[] = [
   },
 ];
 
-/** Counter hours. The operations cover below runs past them, and says so. */
-export const OFFICE_HOURS = "Monday to Saturday, 9:30am to 6:30pm IST";
+/**
+ * Counter hours, held as data rather than as a sentence.
+ *
+ * The contact page prints these and the page's structured data declares them
+ * as an `openingHoursSpecification`, which wants 24-hour times and named days.
+ * Written twice, the two drift the first time the counter opens an hour
+ * earlier — and structured data that contradicts the visible page is a
+ * violation rather than a typo. So this is the source and the sentence below
+ * is derived from it.
+ *
+ * The operations cover runs past these hours; AFTER_HOURS_NOTE says so.
+ */
+export const OFFICE_HOURS_SPEC = {
+  days: [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ],
+  /** 24-hour, as schema.org requires. */
+  opens: "09:30",
+  closes: "18:30",
+  timeZone: "IST",
+} as const;
+
+/** "09:30" → "9:30am". The form the counter hours are read aloud in. */
+function to12Hour(time: string): string {
+  const [hours, minutes] = time.split(":").map(Number);
+  return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")}${hours < 12 ? "am" : "pm"}`;
+}
+
+const { days, opens, closes, timeZone } = OFFICE_HOURS_SPEC;
+
+export const OFFICE_HOURS = `${days[0]} to ${days[days.length - 1]}, ${to12Hour(opens)} to ${to12Hour(closes)} ${timeZone}`;
 
 export const AFTER_HOURS_NOTE =
   "24x7 customer service, with updates through your shipment's transit.";

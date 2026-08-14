@@ -4,68 +4,57 @@ import { PageHero } from "@/components/sections/PageHero";
 import { Contact } from "@/components/sections/Contact";
 import { ContactOffices } from "@/components/sections/ContactOffices";
 import { ROUTES } from "@/components/layout/nav-links";
-import { CONTACT_DESKS, OFFICE_HOURS } from "@/content/contacts";
-import { ORGANIZATION, SITE_URL } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { absoluteUrl, pageMetadata } from "@/lib/seo";
+import {
+  headOfficeNode,
+  HEAD_OFFICE_ID,
+  ORGANIZATION_ID,
+  WEBSITE_ID,
+} from "@/lib/structured-data";
 
 const description =
-  "Reach the SK Internationals desk that owns your file: customer service, operations, or compliance. Call, WhatsApp, email, or send an enquiry and we will respond within one business day.";
+  "Reach the SK Internationals desk that owns your file: customer service, operations, or compliance. Call, WhatsApp, or email and we reply within one business day.";
 
 const HERO_IMAGE = "/images/heroes/contact2.png";
 
-export const metadata: Metadata = {
-  title: "Contact",
+export const metadata: Metadata = pageMetadata({
+  // "Contact Us" rather than "Contact": it is how the search is actually
+  // typed, and it costs nothing in the tab.
+  title: "Contact Us",
   description,
-  alternates: { canonical: ROUTES.contact },
-  openGraph: {
-    title: "Contact SK Internationals",
-    description,
-    url: ROUTES.contact,
-    images: [HERO_IMAGE],
+  path: ROUTES.contact,
+  socialTitle: "Contact SK Internationals",
+  image: {
+    src: HERO_IMAGE,
+    alt: "A cargo aircraft in SK Internationals livery taking off",
   },
-};
+});
 
 /**
- * Every desk the page publishes, restated for search engines. Built from the
- * same list the page renders, so structured data cannot claim a channel the
- * page doesn't show — the general line leads, because it is the one a search
- * result should surface.
+ * The page, and the office it publishes.
+ *
+ * `ContactPage` points at the company by `@id` rather than restating it — the
+ * organization is declared once in the root layout, and a second copy here
+ * would read as a second company with the same name. `LocalBusiness` is the
+ * physical head office among the company's Indian branches, which is the node
+ * that carries the address, the counter hours, and every desk the page prints.
  */
-const contactPageJsonLd = {
+const contactGraph = {
   "@context": "https://schema.org",
-  "@type": "ContactPage",
-  url: `${SITE_URL}${ROUTES.contact}`,
-  mainEntity: {
-    "@type": "Organization",
-    name: ORGANIZATION.name,
-    url: SITE_URL,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: ORGANIZATION.streetAddress,
-      addressLocality: ORGANIZATION.addressLocality,
-      postalCode: ORGANIZATION.postalCode,
-      addressRegion: ORGANIZATION.addressRegion,
-      addressCountry: ORGANIZATION.addressCountry,
+  "@graph": [
+    {
+      "@type": "ContactPage",
+      "@id": `${absoluteUrl(ROUTES.contact)}#contactpage`,
+      url: absoluteUrl(ROUTES.contact),
+      name: "Contact SK Internationals",
+      description,
+      isPartOf: { "@id": WEBSITE_ID },
+      about: { "@id": ORGANIZATION_ID },
+      mainEntity: { "@id": HEAD_OFFICE_ID },
     },
-    contactPoint: [
-      {
-        "@type": "ContactPoint",
-        contactType: "sales",
-        telephone: ORGANIZATION.telephone,
-        email: ORGANIZATION.email,
-        areaServed: "Worldwide",
-        hoursAvailable: OFFICE_HOURS,
-      },
-      ...CONTACT_DESKS.flatMap((desk) =>
-        desk.contacts.map((contact) => ({
-          "@type": "ContactPoint",
-          contactType: desk.label,
-          email: contact.email,
-          ...(contact.phone ? { telephone: contact.phone } : {}),
-          areaServed: "Worldwide",
-        })),
-      ),
-    ],
-  },
+    headOfficeNode,
+  ],
 };
 
 export default function ContactPage() {
@@ -91,10 +80,7 @@ export default function ContactPage() {
       <Contact />
       <ContactOffices />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageJsonLd) }}
-      />
+      <JsonLd data={contactGraph} />
     </>
   );
 }

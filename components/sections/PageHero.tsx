@@ -7,7 +7,8 @@ import { Container } from "@/components/layout/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { ROUTES, type InternalHref } from "@/components/layout/nav-links";
-import { SITE_URL } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbNode } from "@/lib/structured-data";
 
 interface Crumb {
   label: string;
@@ -57,24 +58,13 @@ export function PageHero({
     ...(parent ? [parent] : []),
   ];
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      ...ancestors.map((crumb, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name: crumb.label,
-        item: `${SITE_URL}${crumb.href === ROUTES.home ? "" : crumb.href}`,
-      })),
-      {
-        "@type": "ListItem",
-        position: ancestors.length + 1,
-        name: breadcrumb,
-        item: `${SITE_URL}${route}`,
-      },
-    ],
-  };
+  // The trail as rendered below, ending on the current page. Built from the
+  // same two values the markup uses, so the structured trail and the visible
+  // one cannot describe different paths.
+  const breadcrumbJsonLd = breadcrumbNode([
+    ...ancestors.map((crumb) => ({ name: crumb.label, path: crumb.href })),
+    { name: breadcrumb, path: route },
+  ]);
 
   return (
     <section
@@ -159,10 +149,7 @@ export function PageHero({
         )}
       </Container>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbJsonLd} />
     </section>
   );
 }

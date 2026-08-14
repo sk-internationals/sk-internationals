@@ -6,23 +6,30 @@ import { Presence } from "@/components/sections/Presence";
 import { WhyChooseSK } from "@/components/sections/WhyChooseSK";
 import { CTABand } from "@/components/sections/CTABand";
 import { ROUTES } from "@/components/layout/nav-links";
+import { OFFICE_CITY_COUNT } from "@/content/network";
+import { pageMetadata } from "@/lib/seo";
 
-const description =
-  "Established in 2011, SK Internationals is a full service EXIM and logistics partner with offices in six Indian cities, built on transparency and lasting relationships.";
+// The city count is interpolated rather than spelled out: this line claimed
+// six while the home page hero rendered the count from content/network.ts, and
+// a visitor who reads both is told two different things about the same company.
+const description = `Established in 2011, SK Internationals is an EXIM and logistics partner with offices in ${OFFICE_CITY_COUNT} Indian cities, built on transparency and lasting relationships.`;
 
 const HERO_IMAGE = "/images/heroes/about.jpg";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description,
-  alternates: { canonical: ROUTES.about },
-  openGraph: {
-    title: "About SK Internationals",
-    description,
-    url: ROUTES.about,
-    images: [HERO_IMAGE],
+  path: ROUTES.about,
+  socialTitle: "About SK Internationals",
+  // Not the hero photograph: that frame is portrait (1125×1500), and every
+  // link scraper crops a share card to landscape, which reduces a portrait
+  // image to an unreadable middle band. This is the "Who We Are" frame the
+  // home page already uses for the same route, at 3:2.
+  image: {
+    src: "/images/overview/who-we-are.jpg",
+    alt: "Container terminal at dusk, gantry cranes alongside a berthed vessel",
   },
-};
+});
 
 export default function AboutPage() {
   return (

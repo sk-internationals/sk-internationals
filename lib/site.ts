@@ -3,10 +3,26 @@ import { telHref } from "@/lib/utils";
 // Absolute origin, needed for canonicals, Open Graph, and the sitemap. Set
 // NEXT_PUBLIC_SITE_URL per environment so preview deploys don't emit
 // production canonicals.
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.skinternationals.in";
+//
+// The trailing slash is stripped once, here: every consumer joins this with a
+// route that already starts with "/", so an origin set as
+// "https://www.skinternationals.in/" in the environment would otherwise emit
+// "https://www.skinternationals.in//about" as a canonical — a URL Google reads
+// as a second, duplicate page.
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.skinternationals.in"
+).replace(/\/+$/, "");
 
 export const SITE_NAME = "SK Internationals";
+
+/**
+ * English as written for an Indian market. `lang` takes the BCP 47 form and
+ * Open Graph the underscored one — both state the same thing, which is the
+ * signal that this site answers Indian queries rather than generic English
+ * ones.
+ */
+export const SITE_LANG = "en-IN";
+export const OG_LOCALE = "en_IN";
 
 // Mirrors the details rendered in the contact section — kept here only because
 // structured data needs them outside that component's render. Who answers, by
@@ -14,6 +30,14 @@ export const SITE_NAME = "SK Internationals";
 export const ORGANIZATION = {
   name: SITE_NAME,
   legalName: "SK Internationals",
+  /**
+   * One sentence for the knowledge-graph entity. Assembled only from what the
+   * site already states on the page — the service lines from
+   * `content/services.ts`, the footprint from `content/network.ts` — so nothing
+   * here is a claim a visitor cannot verify by reading the site.
+   */
+  description:
+    "SK Internationals is a freight forwarding, customs clearance, and export compliance company based in Coimbatore, Tamil Nadu, moving cargo by sea, air, road, and rail for importers and exporters across India.",
   foundingDate: "2011",
   email: "saravanakumaar@skinternationals.in",
   telephone: "+91 88700 15754",

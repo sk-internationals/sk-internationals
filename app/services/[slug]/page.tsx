@@ -5,8 +5,10 @@ import { PageHero } from "@/components/sections/PageHero";
 import { ServiceDetail } from "@/components/sections/ServiceDetail";
 import { CTABand } from "@/components/sections/CTABand";
 import { ROUTES } from "@/components/layout/nav-links";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SERVICES } from "@/content/services";
-import { ORGANIZATION, SITE_URL } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { serviceNode } from "@/lib/structured-data";
 
 interface ServicePageProps {
   params: Promise<{ slug: string }>;
@@ -29,21 +31,23 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = findService(slug);
 
-  if (!service) return {};
+  // An unknown slug renders the 404 below. Marking it `noindex` here stops a
+  // mistyped or stale inbound link from being indexed as a thin page under a
+  // URL that will never hold content.
+  if (!service) return { title: "Service Not Found", robots: { index: false } };
 
-  const url = `${ROUTES.services}/${service.slug}`;
-
-  return {
+  return pageMetadata({
     title: service.title,
-    description: service.body,
-    alternates: { canonical: url },
-    openGraph: {
-      title: `${service.title} | ${service.desc}`,
-      description: service.body,
-      url,
-      images: [service.image],
-    },
-  };
+    // `summary`, not `body`: the body paragraph runs to three or four times the
+    // length a result will show, so it was being cut off mid-sentence.
+    description: service.summary,
+    path: `${ROUTES.services}/${service.slug}`,
+    // The headline the page itself opens on. It says what the service does,
+    // which a card stripped of the site's navigation needs and the two-word
+    // title cannot supply on its own.
+    socialTitle: service.desc,
+    image: { src: service.image, alt: service.imageAlt },
+  });
 }
 
 export default async function ServiceDetailPage({ params }: ServicePageProps) {
@@ -56,28 +60,16 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
 
   // Filed under what the page sells. The company entity is already declared
   // once in the root layout, so this only references it as the provider.
-  const serviceJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Service",
+  const serviceJsonLd = serviceNode({
     name: service.title,
     serviceType: service.tag,
+    // The full paragraph here, not the meta summary: a description in
+    // structured data is not length-capped, and this one should match what the
+    // page actually says.
     description: service.body,
-    url: `${SITE_URL}${url}`,
-    provider: {
-      "@type": "Organization",
-      name: ORGANIZATION.name,
-      url: SITE_URL,
-    },
-    areaServed: "Worldwide",
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: `${service.title} capabilities`,
-      itemListElement: service.items.map((item) => ({
-        "@type": "Offer",
-        itemOffered: { "@type": "Service", name: item },
-      })),
-    },
-  };
+    path: url,
+    items: service.items,
+  });
 
   return (
     <>
@@ -92,10 +84,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
       />
       <ServiceDetail service={service} />
       <CTABand />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
-      />
+      <JsonLd data={serviceJsonLd} />
     </>
   );
 }

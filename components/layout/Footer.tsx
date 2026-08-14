@@ -93,7 +93,11 @@ export function Footer() {
               className="h-20 w-40 md:h-22"
             />
 
-            <Heading as="h4" size="h3" className="max-w-xs text-white">
+            {/* `h2` with `h3` sizing: at h4 this was the only heading in the
+                footer and it skipped two levels down from the page's h1, which
+                is a heading-order failure on every route. The size prop keeps
+                the type exactly as it was. */}
+            <Heading as="h2" size="h3" className="max-w-xs text-white">
               Powering Businesses Through Reliable Logistics
             </Heading>
 

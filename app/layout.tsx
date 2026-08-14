@@ -8,7 +8,10 @@ import { ScrollProgressBar } from "@/components/layout/ScrollProgressBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ROUTES } from "@/components/layout/nav-links";
-import { ORGANIZATION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { OFFICE_CITY_COUNT } from "@/content/network";
+import { siteGraph } from "@/lib/structured-data";
+import { OG_LOCALE, SITE_LANG, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,47 +23,49 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "SK Internationals | Global B2B Freight & Logistics",
+    // Brand first on the home page, per claude/SEO.md — it is the one page
+    // that has to win the branded search as well as the category one. The
+    // geography is not decoration: "logistics" alone competes globally, and
+    // every buyer this site is written for is shipping out of India.
+    default: "SK Internationals | Freight Forwarding & Logistics in India",
     template: "%s | SK Internationals",
   },
-  description:
-    "SK Internationals delivers reliable, transparent freight forwarding and logistics across the Gulf, Red Sea, and Indian Subcontinent.",
+  // Replaces a line that promised the Gulf, the Red Sea, and the Indian
+  // Subcontinent — three lanes named nowhere else on the site, while the
+  // network this company actually publishes (content/network.ts) reaches the
+  // Middle East, Europe, the UK, the USA, and beyond. The office count is
+  // interpolated from the same constant the hero renders, so the two can never
+  // disagree about how many cities there are.
+  description: `Freight forwarding, customs clearance, warehousing, and export compliance for importers and exporters. Head office in Coimbatore, offices in ${OFFICE_CITY_COUNT} Indian cities.`,
   alternates: { canonical: ROUTES.home },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
+    locale: OG_LOCALE,
     url: ROUTES.home,
-    images: ["/hero-port.jpg"],
+    images: [
+      {
+        url: "/hero-port.jpg",
+        alt: "Container cranes working a berth at a commercial port",
+      },
+    ],
   },
   twitter: { card: "summary_large_image" },
-};
-
-// Organization details only — nothing here is claimed that the contact section
-// doesn't already state on the page.
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: ORGANIZATION.name,
-  url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
-  foundingDate: ORGANIZATION.foundingDate,
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: ORGANIZATION.addressLocality,
-    postalCode: ORGANIZATION.postalCode,
-    addressRegion: ORGANIZATION.addressRegion,
-    addressCountry: ORGANIZATION.addressCountry,
+  // The card type is the only Twitter value that cannot be inferred; Next
+  // fills the title, description, and image from the Open Graph block on each
+  // page. `max-image-preview:large` is what earns a thumbnail beside the
+  // result on mobile, where most of this traffic lands.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "sales",
-    telephone: ORGANIZATION.telephone,
-    email: ORGANIZATION.email,
-    areaServed: "Worldwide",
-  },
-  // Ties the site to the company's verified profile, so search engines resolve
-  // both to one entity rather than two.
-  sameAs: [ORGANIZATION.linkedin],
 };
 
 export default function RootLayout({
@@ -76,7 +81,7 @@ export default function RootLayout({
     // the page jamming partway down. `min-h-dvh` on the body preserves the
     // sticky-footer layout this was doing without freezing the measurement.
     <html
-      lang="en"
+      lang={SITE_LANG}
       className={`${inter.variable} antialiased`}
     >
       <body className="flex min-h-dvh flex-col">
@@ -90,12 +95,10 @@ export default function RootLayout({
           </main>
           <Footer />
         </Providers>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationJsonLd),
-          }}
-        />
+        {/* The company and the site, declared once for the whole app. Every
+            other page's structured data references these two by `@id` rather
+            than restating them. */}
+        <JsonLd data={siteGraph} />
       </body>
     </html>
   );

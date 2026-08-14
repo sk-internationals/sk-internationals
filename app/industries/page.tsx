@@ -4,23 +4,22 @@ import { PageHero } from "@/components/sections/PageHero";
 import { Industries } from "@/components/sections/Industries";
 import { CTABand } from "@/components/sections/CTABand";
 import { ROUTES } from "@/components/layout/nav-links";
+import { pageMetadata } from "@/lib/seo";
 
 const description =
-  "Logistics for manufacturing, food and beverage, agriculture, textiles, engineering, retail supply chains, and SMEs built for export across domestic and global markets.";
+  "Logistics for manufacturing, food and beverage, agriculture, textiles, engineering, retail, and SMEs built for export, across domestic and global markets.";
 
 const HERO_IMAGE = "/images/heroes/industries.jpg";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Industries We Serve",
   description,
-  alternates: { canonical: ROUTES.industries },
-  openGraph: {
-    title: "Industries We Serve",
-    description,
-    url: ROUTES.industries,
-    images: [HERO_IMAGE],
+  path: ROUTES.industries,
+  image: {
+    src: HERO_IMAGE,
+    alt: "Aerial view of an industrial district of warehouses, factories, and rail sidings",
   },
-};
+});
 
 export default function IndustriesPage() {
   return (

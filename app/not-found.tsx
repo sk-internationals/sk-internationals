@@ -8,6 +8,11 @@ import { ButtonGroup } from "@/components/ui/ButtonGroup";
 import { Link } from "@/components/ui/Link";
 import { NAV_LINKS, ROUTES } from "@/components/layout/nav-links";
 
+// This has to be stated even though Next emits its own `noindex` for the
+// not-found boundary: without it the page also inherits the root layout's
+// `index, follow`, and a 404 that carries both directives at once is telling
+// the crawler two opposite things. Restating it means every robots tag on the
+// page agrees.
 export const metadata: Metadata = {
   title: "Page Not Found",
   robots: { index: false, follow: true },

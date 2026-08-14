@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/sections/PageHero";
 import { RequestQuote } from "@/components/sections/RequestQuote";
 import { ROUTES } from "@/components/layout/nav-links";
+import { pageMetadata } from "@/lib/seo";
 
 const description =
   "Tell us the mode, the lane, and the cargo. SK Internationals comes back with a written rate and transit time, usually within one business day.";
@@ -12,17 +13,16 @@ const description =
 // visitor has already seen.
 const HERO_IMAGE = "/images/services/freight-forwarding.jpg";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Request a Quote",
   description,
-  alternates: { canonical: ROUTES.requestQuote },
-  openGraph: {
-    title: "Request a Freight Quote",
-    description,
-    url: ROUTES.requestQuote,
-    images: [HERO_IMAGE],
+  path: ROUTES.requestQuote,
+  socialTitle: "Request a Freight Quote",
+  image: {
+    src: HERO_IMAGE,
+    alt: "Aerial view of a container port, container ships alongside the quay",
   },
-};
+});
 
 export default function RequestQuotePage() {
   return (

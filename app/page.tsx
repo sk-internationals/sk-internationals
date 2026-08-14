@@ -5,16 +5,12 @@ import { ExportEnablement } from "@/components/sections/ExportEnablement";
 import { FAQ } from "@/components/sections/FAQ";
 import { CTABand } from "@/components/sections/CTABand";
 import { FAQS } from "@/content/faq";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqNode } from "@/lib/structured-data";
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQS.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: { "@type": "Answer", text: faq.a },
-  })),
-};
+// The home page's title, description, and canonical are the site-wide defaults
+// in app/layout.tsx — this is the one route where the fallback is the intended
+// value, so re-declaring them here would be two sources for one string.
 
 export default function Home() {
   return (
@@ -25,10 +21,7 @@ export default function Home() {
       <ExportEnablement />
       <FAQ />
       <CTABand />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <JsonLd data={faqNode(FAQS)} />
     </>
   );
 }
