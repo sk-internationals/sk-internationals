@@ -183,7 +183,12 @@ export function Contact() {
                     <Heading as="h3" size="h2" className="text-text">
                       Send an Enquiry
                     </Heading>
-                    <Text as="p" size="caption" color="secondary" className="mt-2.5">
+                    <Text
+                      as="p"
+                      size="caption"
+                      color="secondary"
+                      className="mt-2.5"
+                    >
                       Know your lane already?{" "}
                       <Link href={ROUTES.requestQuote} className="font-medium">
                         Request a quote
@@ -338,7 +343,7 @@ export function Contact() {
                   {submitError && (
                     <p role="alert" className="text-caption text-error">
                       Something went wrong sending your enquiry. Please try
-                      again, or email us directly at {ORGANIZATION.email}.
+                      again, or email us directly.
                     </p>
                   )}
 
