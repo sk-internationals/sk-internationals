@@ -112,8 +112,8 @@ function readMailConfig():
 
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) problems.push("RESEND_API_KEY is not set.");
-
-  const from = process.env.FORM_FROM_EMAIL?.trim();
+  const FORM_FROM_EMAIL = "noreply@skinternationals.in";
+  const from = FORM_FROM_EMAIL.trim();
   const fromMailbox = from ? mailboxOf(from) : null;
 
   if (!from) {
