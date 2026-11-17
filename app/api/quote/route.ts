@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { COUNTRY_LABELS } from "@/content/countries";
 import { QUOTE_LABELS } from "@/content/quote";
-import { sendFormNotification } from "@/lib/email";
+import { consentSection, sendFormNotification } from "@/lib/email";
 
 // Mirrors the client schema in components/sections/RequestQuote.tsx. Duplicated
 // deliberately: the browser copy is a convenience, this one is the boundary,
@@ -26,6 +26,8 @@ const quoteSchema = z.object({
   email: z.email().max(320),
   phone: z.string().trim().max(50).optional(),
   message: z.string().trim().max(5000).optional(),
+  // DPDP consent — refused at the boundary when absent, as on /api/contact.
+  consent: z.literal(true),
 });
 
 /** Falls back to the raw value so an unknown option still reaches a human. */
@@ -110,6 +112,7 @@ export async function POST(request: Request) {
           },
         ],
       },
+      consentSection(),
     ],
   });
 

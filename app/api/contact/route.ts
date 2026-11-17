@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { sendFormNotification } from "@/lib/email";
+import { consentSection, sendFormNotification } from "@/lib/email";
 
 // Mirrors the client schema in components/sections/Contact.tsx. Duplicated
 // deliberately: the browser copy is a convenience, this one is the boundary.
@@ -21,6 +21,9 @@ const enquirySchema = z.object({
   // rejecting live enquiries at the boundary.
   service: z.string().trim().max(200).optional(),
   message: z.string().trim().min(10).max(5000),
+  // DPDP consent. Without it there is no basis to process anything above, so
+  // a request that skips the form's checkbox is refused here, not delivered.
+  consent: z.literal(true),
 });
 
 export async function POST(request: Request) {
@@ -69,6 +72,7 @@ export async function POST(request: Request) {
         heading: "Message",
         fields: [{ label: "How can we help?", value: message, block: true }],
       },
+      consentSection(),
     ],
   });
 

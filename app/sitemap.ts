@@ -17,6 +17,8 @@ const PRIORITIES: Record<string, number> = {
   [ROUTES.industries]: 0.8,
   [ROUTES.contact]: 0.8,
   [ROUTES.about]: 0.7,
+  // Indexed so it can be found and cited, but it sells nothing.
+  [ROUTES.privacyNotice]: 0.3,
 };
 
 const SERVICE_PRIORITY = 0.7;

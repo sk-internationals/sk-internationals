@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 
+import { NOTICE_VERSION } from "@/content/privacy";
+
 /**
  * Delivery of website form submissions to the desk.
  *
@@ -334,4 +336,29 @@ export async function sendFormNotification(
     console.error("Failed to reach Resend while sending the form email:", err);
     return { ok: false, reason: "provider" };
   }
+}
+
+/**
+ * The record of consent every submission carries, closing the email.
+ *
+ * Under the DPDP Act the burden of proving consent sits with us, and the
+ * notification email is the only place a submission is kept — so the proof
+ * travels with it. Time and notice version are set here on the server, never
+ * taken from the request: a browser could claim any date or wording.
+ */
+export function consentSection(): EmailSection {
+  const givenAt = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  return {
+    heading: "Consent",
+    fields: [
+      { label: "Consent to process", value: "Given (checkbox ticked)" },
+      { label: "Given at", value: `${givenAt} IST` },
+      { label: "Privacy notice version", value: NOTICE_VERSION },
+    ],
+  };
 }

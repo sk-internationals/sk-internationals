@@ -16,6 +16,8 @@ import { ButtonGroup } from "@/components/ui/ButtonGroup";
 import { Field, Select, inputClasses } from "@/components/ui/FormField";
 import { Link } from "@/components/ui/Link";
 import { InlineLinks } from "@/components/ui/InlineLinks";
+import { ConsentField } from "@/components/ui/ConsentField";
+import { CONSENT_REQUIRED_MESSAGE } from "@/content/privacy";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useDeskStatus } from "@/hooks/useDeskStatus";
 import {
@@ -42,6 +44,7 @@ const enquirySchema = z.object({
   company: z.string().optional(),
   service: z.string().optional(),
   message: z.string().min(10, "Tell us a little more about what you need"),
+  consent: z.literal(true, { error: CONSENT_REQUIRED_MESSAGE }),
 });
 
 type EnquiryFormValues = z.infer<typeof enquirySchema>;
@@ -334,6 +337,12 @@ export function Contact() {
                       {...register("message")}
                     />
                   </Field>
+
+                  <ConsentField
+                    id="enquiry-consent"
+                    error={errors.consent?.message}
+                    {...register("consent")}
+                  />
 
                   {submitError && (
                     <p role="alert" className="text-caption text-error">

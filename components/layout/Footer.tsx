@@ -216,6 +216,15 @@ export function Footer() {
           </Text>
           <Text as="p" size="caption" className="text-white/40!">
             © {year} SK Internationals. All rights reserved.
+            <span aria-hidden="true" className="px-2">
+              ·
+            </span>
+            <Link
+              href={ROUTES.privacyNotice}
+              className="text-white/55! hover:text-accent!"
+            >
+              Privacy Notice
+            </Link>
           </Text>
         </div>
       </Container>

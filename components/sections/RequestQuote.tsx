@@ -15,7 +15,9 @@ import { ButtonGroup } from "@/components/ui/ButtonGroup";
 import { Field, Select, inputClasses } from "@/components/ui/FormField";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { Link } from "@/components/ui/Link";
+import { ConsentField } from "@/components/ui/ConsentField";
 import { ROUTES } from "@/components/layout/nav-links";
+import { CONSENT_REQUIRED_MESSAGE } from "@/content/privacy";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { COUNTRY_OPTIONS } from "@/content/countries";
 import {
@@ -41,6 +43,7 @@ const quoteSchema = z.object({
   email: z.email("Enter a valid email address"),
   phone: z.string().optional(),
   message: z.string().optional(),
+  consent: z.literal(true, { error: CONSENT_REQUIRED_MESSAGE }),
 });
 
 type QuoteFormValues = z.infer<typeof quoteSchema>;
@@ -462,6 +465,12 @@ export function RequestQuote() {
                     {...register("message")}
                   />
                 </Field>
+
+                <ConsentField
+                  id="quote-consent"
+                  error={errors.consent?.message}
+                  {...register("consent")}
+                />
 
                 {submitError && (
                   <p role="alert" className="text-caption text-error">

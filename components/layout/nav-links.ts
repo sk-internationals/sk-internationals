@@ -13,6 +13,8 @@ export const ROUTES = {
   // The structured quote flow. Kept off NAV_LINKS on purpose — it is the
   // header's single call to action, not another item competing with it.
   requestQuote: "/request-quote",
+  // Linked from both forms' consent checkbox and the footer; never the nav.
+  privacyNotice: "/privacy-notice",
 } as const;
 
 export type Route = (typeof ROUTES)[keyof typeof ROUTES];
