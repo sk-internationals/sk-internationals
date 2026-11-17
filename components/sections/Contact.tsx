@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { ButtonGroup } from "@/components/ui/ButtonGroup";
 import { Field, Select, inputClasses } from "@/components/ui/FormField";
 import { Link } from "@/components/ui/Link";
+import { InlineLinks } from "@/components/ui/InlineLinks";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useDeskStatus } from "@/hooks/useDeskStatus";
 import {
@@ -24,13 +25,7 @@ import {
 } from "@/content/contacts";
 import { SERVICE_PAGES } from "@/content/services";
 import { ROUTES } from "@/components/layout/nav-links";
-import {
-  ORGANIZATION,
-  PHONE_DISPLAY,
-  PHONE_HREF,
-  WHATSAPP_HREF,
-  whatsappHref,
-} from "@/lib/site";
+import { ORGANIZATION, WHATSAPP_HREF, whatsappHref } from "@/lib/site";
 import { cn, telHref } from "@/lib/utils";
 
 /**
@@ -387,10 +382,11 @@ export function Contact() {
 
 /**
  * The switchboard, given the full measure of the page rather than the narrow
- * register column it used to sit in: one number, reachable three ways, for the
- * visitor who does not yet know which desk owns their question. Set at heading
- * scale because on a contact page the number *is* the headline — a 24px line
- * folded into a column read as a footnote to the desks below it.
+ * register column it used to sit in: one inbox for the visitor who does not
+ * yet know which desk owns their question. Set at heading scale because on a
+ * contact page the general address *is* the headline — a line folded into a
+ * column read as a footnote to the desks below it. No phone number is
+ * published here at the client's request.
  */
 function MainLine() {
   return (
@@ -398,15 +394,15 @@ function MainLine() {
       data-reveal
       className="mt-12 grid gap-6 border-y border-border py-8 sm:grid-cols-[auto_1fr] sm:items-end sm:gap-10 md:mt-14 md:py-10"
     >
-      <div>
+      <div className="min-w-0">
         <p className="text-caption font-semibold tracking-widest text-text-secondary uppercase">
-          Main line
+          General enquiries
         </p>
         <a
-          href={PHONE_HREF}
-          className="mt-3 block text-h1 font-semibold text-text transition-colors duration-300 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          href={`mailto:${ORGANIZATION.email}`}
+          className="mt-3 block text-h2 font-semibold wrap-break-word text-text transition-colors duration-300 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:text-h1"
         >
-          {PHONE_DISPLAY}
+          {ORGANIZATION.email}
         </a>
       </div>
 
@@ -421,16 +417,7 @@ function MainLine() {
             rel="noopener noreferrer"
             className="underline-offset-4 transition-colors duration-300 hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            WhatsApp the same number
-          </a>
-          <span aria-hidden="true" className="px-2 text-border">
-            ·
-          </span>
-          <a
-            href={`mailto:${ORGANIZATION.email}`}
-            className="wrap-break-word underline-offset-4 transition-colors duration-300 hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            {ORGANIZATION.email}
+            Message us on WhatsApp
           </a>
         </p>
       </div>
@@ -485,22 +472,7 @@ function DeskGroup({ desk }: { desk: ContactDesk }) {
       {/* Only the compliance desk carries these: that enquirer arrives holding a
           licence name rather than a shipment, and needs to see it written down
           before they believe the desk is the right one. */}
-      {desk.topics && (
-        <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption">
-          {desk.topics.map((topic, i) => (
-            <span key={topic.href} className="inline-flex items-center gap-2">
-              {i > 0 && (
-                <span aria-hidden="true" className="text-border">
-                  ·
-                </span>
-              )}
-              <Link href={topic.href} className="text-text-secondary!">
-                {topic.label}
-              </Link>
-            </span>
-          ))}
-        </p>
-      )}
+      {desk.topics && <InlineLinks links={desk.topics} className="mt-4" />}
 
       {/* Two lines per person rather than three columns: the register column is
           now the narrower half of the page, and a three-column table there

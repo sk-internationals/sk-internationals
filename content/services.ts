@@ -424,6 +424,17 @@ SERVICE_PAGES.splice(advisoryOpensAt, 0, {
   href: "/services/export-consultancy",
 });
 
+/**
+ * A service page by address, for cross-links written elsewhere as an href.
+ * Throws rather than returning undefined: a link to a service that has been
+ * renamed or removed should stop the build, not ship as a 404.
+ */
+export function servicePageByHref(href: ServicePage["href"]): ServicePage {
+  const page = SERVICE_PAGES.find((service) => service.href === href);
+  if (!page) throw new Error(`No service page is published at "${href}".`);
+  return page;
+}
+
 export const MARQUEE_SERVICE_NAMES = SERVICE_PAGES.map((s) => s.title).concat([
   "Global Trade Solutions",
 ]);

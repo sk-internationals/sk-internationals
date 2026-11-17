@@ -3,7 +3,9 @@ import Image from "next/image";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { Heading } from "@/components/ui/Heading";
+import { InlineLinks } from "@/components/ui/InlineLinks";
 import { INDUSTRIES, type Industry } from "@/content/industries";
+import { servicePageByHref } from "@/content/services";
 
 function IndustryCard({ industry }: { industry: Industry }) {
   return (
@@ -22,6 +24,15 @@ function IndustryCard({ industry }: { industry: Industry }) {
           {industry.name}
         </Heading>
         <p className="mt-2 text-body text-text-secondary">{industry.desc}</p>
+        {/* Where a shipper from this sector goes next — named by the service,
+            so the link says what it opens before it is followed. */}
+        <InlineLinks
+          className="mt-4"
+          links={industry.services.map((href) => ({
+            label: servicePageByHref(href).title,
+            href,
+          }))}
+        />
       </div>
     </div>
   );

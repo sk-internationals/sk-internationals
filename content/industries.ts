@@ -1,9 +1,18 @@
+import type { ServicePage } from "@/content/services";
+
 export interface Industry {
   name: string;
   desc: string;
   image: string;
   credit: string;
   creditHref: string;
+  /**
+   * The service pages this sector's cargo most often needs, in the order a
+   * shipper from it would reach for them. Rendered as links on the card and
+   * read back by each service page to name the sectors it serves, so the two
+   * directions cannot disagree.
+   */
+  services: ServicePage["href"][];
 }
 
 /**
@@ -19,6 +28,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/manufacturing.jpg",
     credit: "Simon Kadula on Unsplash",
     creditHref: "https://unsplash.com/@simonkadula",
+    services: [
+      "/services/freight-forwarding",
+      "/services/customs-clearance",
+      "/services/warehousing",
+    ],
   },
   {
     name: "Food & Beverage",
@@ -26,6 +40,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/food-beverage.jpg",
     credit: "Arno Senoner on Unsplash",
     creditHref: "https://unsplash.com/@arnosenoner",
+    services: [
+      "/services/export-inspection",
+      "/services/freight-forwarding",
+      "/services/customs-clearance",
+    ],
   },
   {
     name: "Agriculture",
@@ -33,6 +52,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/agriculture.jpg",
     credit: "Loren King on Unsplash",
     creditHref: "https://unsplash.com/@kingimaging",
+    services: [
+      "/services/export-inspection",
+      "/services/coir-board",
+      "/services/freight-forwarding",
+    ],
   },
   {
     name: "Textiles",
@@ -40,6 +64,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/textiles.jpg",
     credit: "Lalit Kumar on Unsplash",
     creditHref: "https://unsplash.com/@klalit",
+    services: [
+      "/services/textile-committee",
+      "/services/dgft-and-licensing",
+      "/services/freight-forwarding",
+    ],
   },
   {
     name: "Engineering",
@@ -47,6 +76,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/engineering.jpg",
     credit: "Zheng Ji on Unsplash",
     creditHref: "https://unsplash.com/@zhengjialuminum",
+    services: [
+      "/services/transportation",
+      "/services/container-handling",
+      "/services/freight-forwarding",
+    ],
   },
   {
     name: "DG Goods",
@@ -54,6 +88,10 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/dg-goods.jpg",
     credit: "benjamin lehman on Unsplash",
     creditHref: "https://unsplash.com/@abject",
+    services: [
+      "/services/freight-forwarding",
+      "/services/customs-clearance",
+    ],
   },
   {
     name: "Project Cargo",
@@ -61,6 +99,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/bigbulk-goods.jpg",
     credit: "Julia Taubitz on Unsplash",
     creditHref: "https://unsplash.com/@justmejuliee",
+    services: [
+      "/services/transportation",
+      "/services/freight-forwarding",
+      "/services/container-handling",
+    ],
   },
   {
     name: "Retail & FMCG",
@@ -68,6 +111,11 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/retail-fmcg.jpg",
     credit: "Fikri Rasyid on Unsplash",
     creditHref: "https://unsplash.com/@fikrirasyid",
+    services: [
+      "/services/warehousing",
+      "/services/transportation",
+      "/services/epr-compliance",
+    ],
   },
   {
     name: "SMEs Built for Export",
@@ -75,5 +123,10 @@ export const INDUSTRIES: Industry[] = [
     image: "/images/industries/export-smes.jpg",
     credit: "Bench Accounting on Unsplash",
     creditHref: "https://unsplash.com/@benchaccounting",
+    services: [
+      "/services/export-consultancy",
+      "/services/dgft-and-licensing",
+      "/services/export-legalization",
+    ],
   },
 ];

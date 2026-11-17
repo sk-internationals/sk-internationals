@@ -6,7 +6,9 @@ import { Container } from "@/components/layout/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
+import { Link } from "@/components/ui/Link";
 import { ROUTES } from "@/components/layout/nav-links";
+import { INDUSTRIES } from "@/content/industries";
 import { SERVICE_PAGES, type ServiceItem } from "@/content/services";
 
 interface ServiceDetailProps {
@@ -19,9 +21,13 @@ interface ServiceDetailProps {
  * this opens straight into the substance.
  */
 export function ServiceDetail({ service }: ServiceDetailProps) {
-  const others = SERVICE_PAGES.filter(
-    (page) => page.href !== `/services/${service.slug}`,
-  );
+  const href = `/services/${service.slug}` as const;
+  const others = SERVICE_PAGES.filter((page) => page.href !== href);
+  // Read back from the industries content rather than restated here, so a
+  // sector named on this page is always one whose card links back to it.
+  const sectors = INDUSTRIES.filter((industry) =>
+    industry.services.includes(href),
+  ).map((industry) => industry.name);
 
   return (
     <>
@@ -99,6 +105,15 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
               </li>
             ))}
           </ul>
+
+          <Text as="p" color="secondary" className="mt-10 max-w-2xl">
+            {sectors.length > 0 && (
+              <>Sectors we run this for: {sectors.join(", ")}. </>
+            )}
+            <Link href={ROUTES.industries} className="font-medium">
+              See the industries we serve
+            </Link>
+          </Text>
         </Container>
       </Section>
     </>

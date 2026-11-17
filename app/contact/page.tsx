@@ -14,9 +14,14 @@ import {
 } from "@/lib/structured-data";
 
 const description =
-  "Reach the SK Internationals desk that owns your file: customer service, operations, or compliance. Call, WhatsApp, or email and we reply within one business day.";
+  "Reach the SK Internationals desk that owns your file: customer service, operations, or compliance. Email or WhatsApp and we reply within one business day.";
 
 const HERO_IMAGE = "/images/heroes/contact2.png";
+
+// The hero cropped to 1200×630 and saved as JPEG for link previews only. The
+// hero itself is a 2.5 MB PNG, past the size WhatsApp and LinkedIn will fetch
+// for a card, so a shared contact link was arriving with no picture.
+const SOCIAL_IMAGE = "/images/og/contact.jpg";
 
 export const metadata: Metadata = pageMetadata({
   // "Contact Us" rather than "Contact": it is how the search is actually
@@ -26,7 +31,7 @@ export const metadata: Metadata = pageMetadata({
   path: ROUTES.contact,
   socialTitle: "Contact SK Internationals",
   image: {
-    src: HERO_IMAGE,
+    src: SOCIAL_IMAGE,
     alt: "A cargo aircraft in SK Internationals livery taking off",
   },
 });

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import type { InternalHref } from "@/components/layout/nav-links";
+import { publicImageSize } from "@/lib/image-size";
 import { OG_LOCALE, SITE_NAME, SITE_URL } from "@/lib/site";
 
 /**
@@ -11,6 +12,16 @@ import { OG_LOCALE, SITE_NAME, SITE_URL } from "@/lib/site";
  */
 export function absoluteUrl(path: string): string {
   return path === "/" ? SITE_URL : `${SITE_URL}${path}`;
+}
+
+/**
+ * One link-preview image with its pixel size declared. Without
+ * `og:image:width` and `og:image:height`, Facebook and LinkedIn cannot lay out
+ * the card until they have fetched the image, so the first share of a URL
+ * often renders with no picture at all.
+ */
+export function ogImage(src: string, alt: string) {
+  return { url: src, alt, ...publicImageSize(src) };
 }
 
 interface PageMetadataInput {
@@ -66,7 +77,7 @@ export function pageMetadata({
       title: socialTitle ?? `${title} | ${SITE_NAME}`,
       description,
       url: path,
-      images: [{ url: image.src, alt: image.alt }],
+      images: [ogImage(image.src, image.alt)],
     },
   };
 }

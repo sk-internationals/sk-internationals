@@ -21,9 +21,11 @@ const PRIORITIES: Record<string, number> = {
 
 const SERVICE_PRIORITY = 0.7;
 
+// No `lastModified`. It used to be the build time, which stamped every URL as
+// changed on every deploy; Google learns that a lastmod which always moves is
+// meaningless and stops reading it. Omitting it is honest until there is a real
+// per-page edit date to report.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
-
   // `ROUTES` already contains the export consultancy page, so the service list
   // is de-duplicated against it rather than emitting that URL twice.
   const namedRoutes: string[] = Object.values(ROUTES);
@@ -33,7 +35,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...namedRoutes, ...servicePaths].map((route) => ({
     url: `${SITE_URL}${route === ROUTES.home ? "" : route}`,
-    lastModified,
     changeFrequency: "monthly",
     priority: PRIORITIES[route] ?? SERVICE_PRIORITY,
   }));

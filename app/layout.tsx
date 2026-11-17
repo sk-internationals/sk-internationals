@@ -11,6 +11,7 @@ import { ROUTES } from "@/components/layout/nav-links";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { OFFICE_CITY_COUNT } from "@/content/network";
 import { siteGraph } from "@/lib/structured-data";
+import { ogImage } from "@/lib/seo";
 import { OG_LOCALE, SITE_LANG, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -19,6 +20,9 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
+
+/** Content of Search Console's HTML-tag verification method, without the tag. */
+const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION?.trim();
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -44,13 +48,19 @@ export const metadata: Metadata = {
     locale: OG_LOCALE,
     url: ROUTES.home,
     images: [
-      {
-        url: "/hero-port.jpg",
-        alt: "Container cranes working a berth at a commercial port",
-      },
+      ogImage(
+        "/hero-port.jpg",
+        "Container cranes working a berth at a commercial port",
+      ),
     ],
   },
   twitter: { card: "summary_large_image" },
+  // Search Console ownership proof, emitted only when the token is configured
+  // so preview deploys and local builds never claim the property. Unneeded if
+  // the property is verified by DNS instead.
+  ...(GOOGLE_SITE_VERIFICATION && {
+    verification: { google: GOOGLE_SITE_VERIFICATION },
+  }),
   // The card type is the only Twitter value that cannot be inferred; Next
   // fills the title, description, and image from the Open Graph block on each
   // page. `max-image-preview:large` is what earns a thumbnail beside the

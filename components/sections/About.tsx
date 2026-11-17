@@ -3,7 +3,15 @@ import { Container } from "@/components/layout/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { StatCard } from "@/components/ui/StatCard";
-import { ABOUT_HIGHLIGHTS, ABOUT_PARAGRAPHS, ABOUT_STATS } from "@/content/about";
+import { InlineLinks } from "@/components/ui/InlineLinks";
+import { ROUTES } from "@/components/layout/nav-links";
+import {
+  ABOUT_HIGHLIGHTS,
+  ABOUT_PARAGRAPHS,
+  ABOUT_SERVICE_HREFS,
+  ABOUT_STATS,
+} from "@/content/about";
+import { servicePageByHref } from "@/content/services";
 import { cn } from "@/lib/utils";
 
 export function About() {
@@ -23,6 +31,19 @@ export function About() {
             {paragraph}
           </Text>
         ))}
+
+        {/* The closing paragraph names the work; this is where each piece of
+            it, and the sectors it is done for, can be opened. */}
+        <InlineLinks
+          className="mt-6 max-w-3xl"
+          links={[
+            ...ABOUT_SERVICE_HREFS.map((href) => ({
+              label: servicePageByHref(href).title,
+              href,
+            })),
+            { label: "Industries We Serve", href: ROUTES.industries },
+          ]}
+        />
 
         <div className="mt-16 grid gap-x-10 gap-y-10 sm:grid-cols-3">
           <StatCard

@@ -13,9 +13,8 @@ export default function robots(): MetadataRoute.Robots {
       // site is intended for indexing.
       disallow: "/api/",
     },
+    // No `Host:` line. Google ignores it; the canonical origin is already
+    // stated by every page's canonical link and the apex-to-www redirect.
     sitemap: `${SITE_URL}/sitemap.xml`,
-    // Names the canonical origin outright, so a crawler that reached the site
-    // by another hostname knows which one owns the content.
-    host: SITE_URL,
   };
 }

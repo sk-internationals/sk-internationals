@@ -56,13 +56,8 @@ export const CONTACT_DESKS: ContactDesk[] = [
     label: "Customer Service & Coordination",
     purpose: "Bookings, rates, documents, and updates while cargo is moving.",
     contacts: [
-      { email: "sk@skinternationals.in", phone: "+91 84898 56666" },
+      { email: "sk@skinternationals.in" },
       { name: "Ramki", email: "ramki@skinternationals.in", phone: "+91 85240 80495" },
-      {
-        name: "Senthilkumar",
-        email: "senthilkumar@skinternationals.in",
-        phone: "+91 84898 89974",
-      },
     ],
   },
   {
@@ -87,9 +82,7 @@ export const CONTACT_DESKS: ContactDesk[] = [
     // by the export advisory team.
     purpose:
       "Certification and licensing, opened on the customer service desk and worked by our advisory team.",
-    contacts: [
-      { email: "sk@skinternationals.in", phone: "+91 84898 56666" },
-    ],
+    contacts: [{ email: "sk@skinternationals.in" }],
     topics: [
       { label: "BIS Certification", href: "/services/bis-certification" },
       { label: "EPR Compliance", href: "/services/epr-compliance" },
